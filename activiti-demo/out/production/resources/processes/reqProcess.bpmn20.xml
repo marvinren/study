@@ -1,0 +1,701 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="reqProcess" name="需求管理流程" isExecutable="true">
+    <startEvent id="ReqInput" name="需求录入"></startEvent>
+    <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow1" sourceRef="ReqInput" targetRef="parallelgateway1"></sequenceFlow>
+    <userTask id="ReqAllot" name="需求分配">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow2" sourceRef="parallelgateway1" targetRef="ReqAllot"></sequenceFlow>
+    <userTask id="ThirdReqAllot" name="第三方需求分配">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="ReqAnalysis" name="需求分析">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow4" sourceRef="ReqAllot" targetRef="ReqAnalysis"></sequenceFlow>
+    <userTask id="ThirdReqAys" name="第三方需求分析">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow5" sourceRef="ThirdReqAllot" targetRef="ThirdReqAys"></sequenceFlow>
+    <userTask id="ThirdAysVerify" name="业支第三方分析审核">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow6" sourceRef="ThirdReqAys" targetRef="ThirdAysVerify"></sequenceFlow>
+    <userTask id="AnalysisVerify" name="需求负责人分析审核">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow11" sourceRef="ReqAnalysis" targetRef="AnalysisVerify">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="ReqSubStaffAysCfm" name="需求提交人分析确认">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="ReqRollback" name="需求回退">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="BusiTermVerify" name="业支需求终止审核">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="ReqStop" name="需求终止">
+      <extensionElements>
+        <activiti:executionListener event="end" delegateExpression="#{endReqTaskListener}"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="flow17" sourceRef="BusiTermVerify" targetRef="ReqStop">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="BusiMgrVerify" name="业支经理审核">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow19" sourceRef="AnalysisVerify" targetRef="BusiMgrVerify">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="DevAllot" name="开发分配">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="DevReq" name="需求开发">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqSignTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqSignTaskListener}"></activiti:taskListener>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="staffList" activiti:elementVariable="staffId">
+        <completionCondition>${nrOfCompletedInstances/nrOfInstances == 1}</completionCondition>
+      </multiInstanceLoopCharacteristics>
+    </userTask>
+    <userTask id="SIAllotTest" name="集成商测试分配">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow22" sourceRef="DevReq" targetRef="SIAllotTest"></sequenceFlow>
+    <userTask id="SITestReq" name="集成商测试">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqSignTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqSignTaskListener}"></activiti:taskListener>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="staffList" activiti:elementVariable="staffId">
+        <completionCondition>${nrOfCompletedInstances/nrOfInstances == 1}</completionCondition>
+      </multiInstanceLoopCharacteristics>
+    </userTask>
+    <sequenceFlow id="flow23" sourceRef="SIAllotTest" targetRef="SITestReq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="ThirdAllot" name="第三方负责人分配">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow24" sourceRef="exclusivegateway1" targetRef="ThirdAllot">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="ThirdTest" name="第三方测试">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqSignTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqSignTaskListener}"></activiti:taskListener>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="staffList" activiti:elementVariable="staffId">
+        <completionCondition>${nrOfCompletedInstances/nrOfInstances == 1}</completionCondition>
+      </multiInstanceLoopCharacteristics>
+    </userTask>
+    <sequenceFlow id="flow25" sourceRef="ThirdAllot" targetRef="ThirdTest"></sequenceFlow>
+    <userTask id="ReqResVerify" name="需求负责人审核">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow26" sourceRef="ThirdTest" targetRef="ReqResVerify"></sequenceFlow>
+    <userTask id="ReqSubStaffTestCfm" name="需求提交人测试确认">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow27" sourceRef="ReqResVerify" targetRef="ReqSubStaffTestCfm">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="ReqTobeReleased" name="需求发布">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow31" sourceRef="ReqSubStaffTestCfm" targetRef="ReqTobeReleased">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="OperateVerify" name="运营室审核">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow32" sourceRef="ReqTobeReleased" targetRef="OperateVerify"></sequenceFlow>
+    <userTask id="ReqRelease" name="上线发布">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow33" sourceRef="OperateVerify" targetRef="ReqRelease">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <parallelGateway id="parallelgateway3" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow35" sourceRef="ReqRelease" targetRef="parallelgateway3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="ReqDeliver" name="需求交付">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqSignTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqSignTaskListener}"></activiti:taskListener>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="staffList" activiti:elementVariable="staffId">
+        <completionCondition>${nrOfCompletedInstances/nrOfInstances == 1}</completionCondition>
+      </multiInstanceLoopCharacteristics>
+    </userTask>
+    <sequenceFlow id="flow37" sourceRef="parallelgateway3" targetRef="ReqDeliver"></sequenceFlow>
+    <userTask id="BusiGrayTest" name="业务部门交付">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow38" sourceRef="parallelgateway3" targetRef="BusiGrayTest"></sequenceFlow>
+    <sequenceFlow id="flow40" sourceRef="ReqDeliver" targetRef="parallelgateway4"></sequenceFlow>
+    <userTask id="BusiTestVerify" name="需求负责人审核">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="ReqSubStaffSatiAsse" name="需求提交人满意度评估">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow42" sourceRef="BusiTestVerify" targetRef="ReqSubStaffSatiAsse"></sequenceFlow>
+    <userTask id="supSatisftCheck" name="满意度复核">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow43" sourceRef="ReqSubStaffSatiAsse" targetRef="supSatisftCheck"></sequenceFlow>
+    <userTask id="ReqArchive" name="需求归档">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow44" sourceRef="supSatisftCheck" targetRef="ReqArchive">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="reqEnd" name="需求结束">
+      <extensionElements>
+        <activiti:executionListener event="end" delegateExpression="#{endReqTaskListener}"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <userTask id="busiDeliveSign" name="业务交付会签">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqSignTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqSignTaskListener}"></activiti:taskListener>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="staffList" activiti:elementVariable="staffId">
+        <completionCondition>${nrOfCompletedInstances/nrOfInstances == 1}</completionCondition>
+      </multiInstanceLoopCharacteristics>
+    </userTask>
+    <sequenceFlow id="flow47" sourceRef="BusiGrayTest" targetRef="busiDeliveSign">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="BusiSupportVerify" name="业支分管副总审核">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow52" sourceRef="BusiMgrVerify" targetRef="BusiSupportVerify">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="ModifyAnalysis" name="分析修改">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="#{createReqTaskListener}"></activiti:taskListener>
+        <activiti:taskListener event="delete" delegateExpression="#{completeReqTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow53" sourceRef="parallelgateway1" targetRef="ThirdReqAllot"></sequenceFlow>
+    <parallelGateway id="parallelgateway5" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow54" sourceRef="ThirdAysVerify" targetRef="parallelgateway5">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow55" sourceRef="ThirdAysVerify" targetRef="ThirdReqAys">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow56" sourceRef="parallelgateway5" targetRef="ThirdAllot"></sequenceFlow>
+    <sequenceFlow id="flow57" sourceRef="ReqAnalysis" targetRef="ReqSubStaffAysCfm">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow58" sourceRef="ReqSubStaffAysCfm" targetRef="ReqAnalysis"></sequenceFlow>
+    <sequenceFlow id="flow59" sourceRef="AnalysisVerify" targetRef="ModifyAnalysis">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow60" sourceRef="ModifyAnalysis" targetRef="AnalysisVerify"></sequenceFlow>
+    <sequenceFlow id="flow61" sourceRef="AnalysisVerify" targetRef="ReqRollback">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='D'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow62" sourceRef="ReqRollback" targetRef="AnalysisVerify">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow63" sourceRef="ReqRollback" targetRef="BusiTermVerify">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow66" sourceRef="BusiSupportVerify" targetRef="DevAllot">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow67" sourceRef="DevAllot" targetRef="DevReq"></sequenceFlow>
+    <sequenceFlow id="flow68" sourceRef="AnalysisVerify" targetRef="DevAllot">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='C'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow69" sourceRef="BusiTermVerify" targetRef="AnalysisVerify">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow70" sourceRef="BusiMgrVerify" targetRef="AnalysisVerify">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow71" sourceRef="BusiSupportVerify" targetRef="AnalysisVerify">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow72" sourceRef="SIAllotTest" targetRef="DevAllot">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow73" sourceRef="exclusivegateway1" targetRef="parallelgateway5">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow74" sourceRef="ReqResVerify" targetRef="ThirdAllot">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='C'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow75" sourceRef="ReqResVerify" targetRef="SIAllotTest">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow76" sourceRef="ReqSubStaffTestCfm" targetRef="SIAllotTest">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow77" sourceRef="OperateVerify" targetRef="ReqTobeReleased">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow78" sourceRef="ReqRelease" targetRef="ReqTobeReleased">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow79" sourceRef="BusiGrayTest" targetRef="parallelgateway4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='A'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow80" sourceRef="busiDeliveSign" targetRef="BusiGrayTest"></sequenceFlow>
+    <sequenceFlow id="flow81" sourceRef="supSatisftCheck" targetRef="ReqSubStaffSatiAsse">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='B'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow82" sourceRef="BusiMgrVerify" targetRef="DevAllot">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${verify=='C'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow83" sourceRef="ReqArchive" targetRef="reqEnd"></sequenceFlow>
+    <parallelGateway id="parallelgateway4" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow49" sourceRef="parallelgateway4" targetRef="BusiTestVerify"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow84" sourceRef="SITestReq" targetRef="exclusivegateway1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_reqProcess">
+    <bpmndi:BPMNPlane bpmnElement="reqProcess" id="BPMNPlane_reqProcess">
+      <bpmndi:BPMNShape bpmnElement="ReqInput" id="BPMNShape_ReqInput">
+        <omgdc:Bounds height="35.0" width="35.0" x="20.0" y="500.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway1" id="BPMNShape_parallelgateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="121.0" y="497.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ReqAllot" id="BPMNShape_ReqAllot">
+        <omgdc:Bounds height="55.0" width="105.0" x="88.0" y="410.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ThirdReqAllot" id="BPMNShape_ThirdReqAllot">
+        <omgdc:Bounds height="55.0" width="105.0" x="87.0" y="570.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ReqAnalysis" id="BPMNShape_ReqAnalysis">
+        <omgdc:Bounds height="55.0" width="105.0" x="88.0" y="203.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ThirdReqAys" id="BPMNShape_ThirdReqAys">
+        <omgdc:Bounds height="55.0" width="105.0" x="243.0" y="570.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ThirdAysVerify" id="BPMNShape_ThirdAysVerify">
+        <omgdc:Bounds height="55.0" width="113.0" x="400.0" y="570.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="AnalysisVerify" id="BPMNShape_AnalysisVerify">
+        <omgdc:Bounds height="55.0" width="121.0" x="392.0" y="203.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ReqSubStaffAysCfm" id="BPMNShape_ReqSubStaffAysCfm">
+        <omgdc:Bounds height="55.0" width="121.0" x="80.0" y="102.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ReqRollback" id="BPMNShape_ReqRollback">
+        <omgdc:Bounds height="55.0" width="105.0" x="400.0" y="102.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="BusiTermVerify" id="BPMNShape_BusiTermVerify">
+        <omgdc:Bounds height="55.0" width="105.0" x="243.0" y="102.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ReqStop" id="BPMNShape_ReqStop">
+        <omgdc:Bounds height="35.0" width="35.0" x="278.0" y="7.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="BusiMgrVerify" id="BPMNShape_BusiMgrVerify">
+        <omgdc:Bounds height="55.0" width="105.0" x="560.0" y="311.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="DevAllot" id="BPMNShape_DevAllot">
+        <omgdc:Bounds height="55.0" width="105.0" x="710.0" y="201.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="DevReq" id="BPMNShape_DevReq">
+        <omgdc:Bounds height="55.0" width="105.0" x="856.0" y="201.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="SIAllotTest" id="BPMNShape_SIAllotTest">
+        <omgdc:Bounds height="55.0" width="105.0" x="999.0" y="201.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="SITestReq" id="BPMNShape_SITestReq">
+        <omgdc:Bounds height="55.0" width="105.0" x="1009.0" y="303.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ThirdAllot" id="BPMNShape_ThirdAllot">
+        <omgdc:Bounds height="55.0" width="105.0" x="1130.0" y="489.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ThirdTest" id="BPMNShape_ThirdTest">
+        <omgdc:Bounds height="55.0" width="105.0" x="1280.0" y="487.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ReqResVerify" id="BPMNShape_ReqResVerify">
+        <omgdc:Bounds height="55.0" width="105.0" x="1425.0" y="485.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ReqSubStaffTestCfm" id="BPMNShape_ReqSubStaffTestCfm">
+        <omgdc:Bounds height="55.0" width="113.0" x="1578.0" y="485.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ReqTobeReleased" id="BPMNShape_ReqTobeReleased">
+        <omgdc:Bounds height="55.0" width="105.0" x="1582.0" y="570.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="OperateVerify" id="BPMNShape_OperateVerify">
+        <omgdc:Bounds height="55.0" width="105.0" x="1425.0" y="570.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ReqRelease" id="BPMNShape_ReqRelease">
+        <omgdc:Bounds height="55.0" width="105.0" x="1425.0" y="715.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway3" id="BPMNShape_parallelgateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="1312.0" y="722.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ReqDeliver" id="BPMNShape_ReqDeliver">
+        <omgdc:Bounds height="55.0" width="105.0" x="1130.0" y="769.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="BusiGrayTest" id="BPMNShape_BusiGrayTest">
+        <omgdc:Bounds height="55.0" width="105.0" x="1130.0" y="657.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="BusiTestVerify" id="BPMNShape_BusiTestVerify">
+        <omgdc:Bounds height="55.0" width="105.0" x="856.0" y="714.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ReqSubStaffSatiAsse" id="BPMNShape_ReqSubStaffSatiAsse">
+        <omgdc:Bounds height="61.0" width="105.0" x="710.0" y="711.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="supSatisftCheck" id="BPMNShape_supSatisftCheck">
+        <omgdc:Bounds height="55.0" width="105.0" x="560.0" y="714.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ReqArchive" id="BPMNShape_ReqArchive">
+        <omgdc:Bounds height="55.0" width="105.0" x="400.0" y="714.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reqEnd" id="BPMNShape_reqEnd">
+        <omgdc:Bounds height="35.0" width="35.0" x="278.0" y="724.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="busiDeliveSign" id="BPMNShape_busiDeliveSign">
+        <omgdc:Bounds height="55.0" width="105.0" x="1130.0" y="570.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="BusiSupportVerify" id="BPMNShape_BusiSupportVerify">
+        <omgdc:Bounds height="55.0" width="105.0" x="560.0" y="201.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ModifyAnalysis" id="BPMNShape_ModifyAnalysis">
+        <omgdc:Bounds height="55.0" width="105.0" x="243.0" y="311.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway5" id="BPMNShape_parallelgateway5">
+        <omgdc:Bounds height="40.0" width="40.0" x="1031.0" y="497.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway4" id="BPMNShape_parallelgateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="1031.0" y="722.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="980.0" y="400.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="55.0" y="517.0"></omgdi:waypoint>
+        <omgdi:waypoint x="121.0" y="517.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="141.0" y="497.0"></omgdi:waypoint>
+        <omgdi:waypoint x="140.0" y="465.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="140.0" y="410.0"></omgdi:waypoint>
+        <omgdi:waypoint x="140.0" y="258.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="192.0" y="597.0"></omgdi:waypoint>
+        <omgdi:waypoint x="243.0" y="597.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="348.0" y="597.0"></omgdi:waypoint>
+        <omgdi:waypoint x="400.0" y="597.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="193.0" y="230.0"></omgdi:waypoint>
+        <omgdi:waypoint x="392.0" y="230.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="295.0" y="102.0"></omgdi:waypoint>
+        <omgdi:waypoint x="295.0" y="42.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="452.0" y="258.0"></omgdi:waypoint>
+        <omgdi:waypoint x="612.0" y="311.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22">
+        <omgdi:waypoint x="961.0" y="228.0"></omgdi:waypoint>
+        <omgdi:waypoint x="999.0" y="228.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
+        <omgdi:waypoint x="1051.0" y="256.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1061.0" y="303.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow24" id="BPMNEdge_flow24">
+        <omgdi:waypoint x="1000.0" y="440.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1182.0" y="489.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow25" id="BPMNEdge_flow25">
+        <omgdi:waypoint x="1235.0" y="516.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1280.0" y="514.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
+        <omgdi:waypoint x="1385.0" y="514.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1425.0" y="512.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow27" id="BPMNEdge_flow27">
+        <omgdi:waypoint x="1530.0" y="512.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1578.0" y="512.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow31" id="BPMNEdge_flow31">
+        <omgdi:waypoint x="1634.0" y="540.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1634.0" y="570.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow32" id="BPMNEdge_flow32">
+        <omgdi:waypoint x="1582.0" y="597.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1530.0" y="597.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow33" id="BPMNEdge_flow33">
+        <omgdi:waypoint x="1477.0" y="625.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1477.0" y="715.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow35" id="BPMNEdge_flow35">
+        <omgdi:waypoint x="1425.0" y="742.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1352.0" y="742.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow37" id="BPMNEdge_flow37">
+        <omgdi:waypoint x="1312.0" y="742.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1182.0" y="769.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow38" id="BPMNEdge_flow38">
+        <omgdi:waypoint x="1312.0" y="742.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1182.0" y="712.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow40" id="BPMNEdge_flow40">
+        <omgdi:waypoint x="1130.0" y="796.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1051.0" y="762.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow42" id="BPMNEdge_flow42">
+        <omgdi:waypoint x="856.0" y="741.0"></omgdi:waypoint>
+        <omgdi:waypoint x="815.0" y="741.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow43" id="BPMNEdge_flow43">
+        <omgdi:waypoint x="710.0" y="741.0"></omgdi:waypoint>
+        <omgdi:waypoint x="665.0" y="741.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow44" id="BPMNEdge_flow44">
+        <omgdi:waypoint x="560.0" y="741.0"></omgdi:waypoint>
+        <omgdi:waypoint x="505.0" y="741.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow47" id="BPMNEdge_flow47">
+        <omgdi:waypoint x="1182.0" y="657.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1182.0" y="625.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow52" id="BPMNEdge_flow52">
+        <omgdi:waypoint x="612.0" y="311.0"></omgdi:waypoint>
+        <omgdi:waypoint x="612.0" y="256.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow53" id="BPMNEdge_flow53">
+        <omgdi:waypoint x="141.0" y="537.0"></omgdi:waypoint>
+        <omgdi:waypoint x="139.0" y="570.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow54" id="BPMNEdge_flow54">
+        <omgdi:waypoint x="513.0" y="597.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1050.0" y="597.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1051.0" y="537.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow55" id="BPMNEdge_flow55">
+        <omgdi:waypoint x="456.0" y="570.0"></omgdi:waypoint>
+        <omgdi:waypoint x="377.0" y="541.0"></omgdi:waypoint>
+        <omgdi:waypoint x="295.0" y="570.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow56" id="BPMNEdge_flow56">
+        <omgdi:waypoint x="1071.0" y="517.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1130.0" y="516.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow57" id="BPMNEdge_flow57">
+        <omgdi:waypoint x="140.0" y="203.0"></omgdi:waypoint>
+        <omgdi:waypoint x="140.0" y="157.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow58" id="BPMNEdge_flow58">
+        <omgdi:waypoint x="140.0" y="157.0"></omgdi:waypoint>
+        <omgdi:waypoint x="76.0" y="177.0"></omgdi:waypoint>
+        <omgdi:waypoint x="140.0" y="203.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow59" id="BPMNEdge_flow59">
+        <omgdi:waypoint x="452.0" y="258.0"></omgdi:waypoint>
+        <omgdi:waypoint x="452.0" y="338.0"></omgdi:waypoint>
+        <omgdi:waypoint x="348.0" y="338.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow60" id="BPMNEdge_flow60">
+        <omgdi:waypoint x="295.0" y="311.0"></omgdi:waypoint>
+        <omgdi:waypoint x="452.0" y="258.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow61" id="BPMNEdge_flow61">
+        <omgdi:waypoint x="452.0" y="203.0"></omgdi:waypoint>
+        <omgdi:waypoint x="452.0" y="157.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow62" id="BPMNEdge_flow62">
+        <omgdi:waypoint x="452.0" y="102.0"></omgdi:waypoint>
+        <omgdi:waypoint x="460.0" y="67.0"></omgdi:waypoint>
+        <omgdi:waypoint x="602.0" y="67.0"></omgdi:waypoint>
+        <omgdi:waypoint x="452.0" y="203.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow63" id="BPMNEdge_flow63">
+        <omgdi:waypoint x="400.0" y="129.0"></omgdi:waypoint>
+        <omgdi:waypoint x="348.0" y="129.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow66" id="BPMNEdge_flow66">
+        <omgdi:waypoint x="665.0" y="228.0"></omgdi:waypoint>
+        <omgdi:waypoint x="710.0" y="228.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow67" id="BPMNEdge_flow67">
+        <omgdi:waypoint x="815.0" y="228.0"></omgdi:waypoint>
+        <omgdi:waypoint x="856.0" y="228.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow68" id="BPMNEdge_flow68">
+        <omgdi:waypoint x="452.0" y="203.0"></omgdi:waypoint>
+        <omgdi:waypoint x="605.0" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="762.0" y="201.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow69" id="BPMNEdge_flow69">
+        <omgdi:waypoint x="295.0" y="157.0"></omgdi:waypoint>
+        <omgdi:waypoint x="452.0" y="203.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow70" id="BPMNEdge_flow70">
+        <omgdi:waypoint x="560.0" y="338.0"></omgdi:waypoint>
+        <omgdi:waypoint x="495.0" y="320.0"></omgdi:waypoint>
+        <omgdi:waypoint x="452.0" y="258.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow71" id="BPMNEdge_flow71">
+        <omgdi:waypoint x="560.0" y="228.0"></omgdi:waypoint>
+        <omgdi:waypoint x="513.0" y="230.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow72" id="BPMNEdge_flow72">
+        <omgdi:waypoint x="1051.0" y="201.0"></omgdi:waypoint>
+        <omgdi:waypoint x="903.0" y="162.0"></omgdi:waypoint>
+        <omgdi:waypoint x="762.0" y="201.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow73" id="BPMNEdge_flow73">
+        <omgdi:waypoint x="1000.0" y="440.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1051.0" y="497.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow74" id="BPMNEdge_flow74">
+        <omgdi:waypoint x="1477.0" y="485.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1326.0" y="432.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1182.0" y="489.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow75" id="BPMNEdge_flow75">
+        <omgdi:waypoint x="1477.0" y="485.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1051.0" y="256.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow76" id="BPMNEdge_flow76">
+        <omgdi:waypoint x="1634.0" y="485.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1051.0" y="256.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow77" id="BPMNEdge_flow77">
+        <omgdi:waypoint x="1477.0" y="570.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1552.0" y="546.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1634.0" y="570.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow78" id="BPMNEdge_flow78">
+        <omgdi:waypoint x="1530.0" y="742.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1634.0" y="741.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1634.0" y="625.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow79" id="BPMNEdge_flow79">
+        <omgdi:waypoint x="1130.0" y="684.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1051.0" y="722.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow80" id="BPMNEdge_flow80">
+        <omgdi:waypoint x="1182.0" y="625.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1272.0" y="643.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1182.0" y="657.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow81" id="BPMNEdge_flow81">
+        <omgdi:waypoint x="612.0" y="714.0"></omgdi:waypoint>
+        <omgdi:waypoint x="692.0" y="676.0"></omgdi:waypoint>
+        <omgdi:waypoint x="762.0" y="711.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow82" id="BPMNEdge_flow82">
+        <omgdi:waypoint x="612.0" y="311.0"></omgdi:waypoint>
+        <omgdi:waypoint x="762.0" y="256.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow83" id="BPMNEdge_flow83">
+        <omgdi:waypoint x="400.0" y="741.0"></omgdi:waypoint>
+        <omgdi:waypoint x="313.0" y="741.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow49" id="BPMNEdge_flow49">
+        <omgdi:waypoint x="1031.0" y="742.0"></omgdi:waypoint>
+        <omgdi:waypoint x="961.0" y="741.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow84" id="BPMNEdge_flow84">
+        <omgdi:waypoint x="1061.0" y="358.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1000.0" y="400.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

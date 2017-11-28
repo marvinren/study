@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.activiti:activiti-spring-boot-starter-basic:5.22.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.activiti/activiti-spring-boot-starter-basic/5.22.0/432e2622b226fdce7c12841eb3fd096d7787a453/activiti-spring-boot-starter-basic-5.22.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.activiti/activiti-spring-boot-starter-basic/5.22.0/69075499833147e58ce5e03dae118db38342ab0e/activiti-spring-boot-starter-basic-5.22.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

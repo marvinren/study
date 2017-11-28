@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/activiti-demo.iml" filepath="$PROJECT_DIR$/activiti-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/activiti-demo_main.iml" filepath="$PROJECT_DIR$/.idea/modules/activiti-demo_main.iml" group="activiti-demo" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/activiti-demo_test.iml" filepath="$PROJECT_DIR$/.idea/modules/activiti-demo_test.iml" group="activiti-demo" />
+    </modules>
+  </component>
+</project>

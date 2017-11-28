@@ -1,0 +1,12 @@
+spring:
+ jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+
+logging:
+  level:
+    ROOT: WARN
+    org.activiti: INFO
+    com.renzq.app: DEBUG

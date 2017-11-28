@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.activiti:activiti-simple-workflow:5.22.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.activiti/activiti-simple-workflow/5.22.0/83799d282b46961cbfa59dab6b995651d9322097/activiti-simple-workflow-5.22.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.activiti/activiti-simple-workflow/5.22.0/1b87e040211957cbb12dd5a71ac3d75813b9bd2a/activiti-simple-workflow-5.22.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
